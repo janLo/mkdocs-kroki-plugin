@@ -12,20 +12,16 @@ from mkdocs import config
 
 class KrokiPlugin(BasePlugin):
     config_scheme = (
-        ('ServerURL', config.config_options.Type(
-            str, default='https://kroki.io')),
-        ('EnableBlockDiag', config.config_options.Type(
-            bool, default=True)),
-        ('Enablebpmn', config.config_options.Type(
-            bool, default=True)),
-        ('EnableExcalidraw', config.config_options.Type(
-            bool, default=True)),
-        ('EnableMermaid', config.config_options.Type(
-            bool, default=True)),
-        ('DownloadImages', config.config_options.Type(
-            bool, default=False)),
-        ('DownloadDir', config.config_options.Type(
-            str, default='images/kroki_generated')),
+        ("ServerURL", config.config_options.Type(str, default="https://kroki.io")),
+        ("EnableBlockDiag", config.config_options.Type(bool, default=True)),
+        ("Enablebpmn", config.config_options.Type(bool, default=True)),
+        ("EnableExcalidraw", config.config_options.Type(bool, default=True)),
+        ("EnableMermaid", config.config_options.Type(bool, default=True)),
+        ("DownloadImages", config.config_options.Type(bool, default=False)),
+        (
+            "DownloadDir",
+            config.config_options.Type(str, default="images/kroki_generated"),
+        ),
     )
 
     kroki_re = ""
@@ -54,29 +50,23 @@ class KrokiPlugin(BasePlugin):
         "rackdiag",
     )
 
-    kroki_bpmn = (
-        "bpmn",
-    )
+    kroki_bpmn = ("bpmn",)
 
-    kroki_excalidraw = (
-        "excalidraw",
-    )
+    kroki_excalidraw = ("excalidraw",)
 
-    kroki_mermaid = (
-        "mermaid",
-    )
+    kroki_mermaid = ("mermaid",)
 
     def on_config(self, config, **kwargs):
         self.kroki_re += "|".join(self.kroki_base)
-        if self.config['EnableBlockDiag']:
+        if self.config["EnableBlockDiag"]:
             self.kroki_re += "|" + "|".join(self.kroki_blockdiag)
-        if self.config['Enablebpmn']:
+        if self.config["Enablebpmn"]:
             self.kroki_re += "|" + "|".join(self.kroki_bpmn)
-        if self.config['EnableExcalidraw']:
+        if self.config["EnableExcalidraw"]:
             self.kroki_re += "|" + "|".join(self.kroki_excalidraw)
-        if self.config['EnableMermaid']:
+        if self.config["EnableMermaid"]:
             self.kroki_re += "|" + "|".join(self.kroki_mermaid)
-        self.kroki_re = r'(?:```kroki-)(' + self.kroki_re + ')\n(.*?)(?:```)'
+        self.kroki_re = r"(?:```kroki-)(" + self.kroki_re + ")\n(.*?)(?:```)"
 
         self._dir = tempfile.TemporaryDirectory(prefix="mkdocs_kroki_")
         self._output_dir = pathlib.Path(config.get("site_dir", "site"))
@@ -106,8 +96,7 @@ class KrokiPlugin(BasePlugin):
         filename = dest_path / f"{ prefix }-{ hash }.svg"
         urllib.request.urlretrieve(url, target / filename)
 
-        file = File(
-            filename, target, self._output_dir , False)
+        file = File(filename, target, self._output_dir, False)
         files.append(file)
 
         pref = "/".join([".." for _ in pathlib.Path(page.file.src_path).parents][1:])
@@ -123,8 +112,7 @@ class KrokiPlugin(BasePlugin):
         target_dir = pathlib.Path(self._dir.name)
 
         def do_download(matchobj):
-            return self._download_image(
-                matchobj, target_dir, page, files)
+            return self._download_image(matchobj, target_dir, page, files)
 
         return re.sub(pattern, do_download, markdown)
 
