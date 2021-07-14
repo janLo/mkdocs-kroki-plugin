@@ -78,12 +78,12 @@ class KrokiPlugin(BasePlugin):
         kroki_path = base64.urlsafe_b64encode(
             zlib.compress(str.encode(matchobj.group(2)), 9)
         ).decode()
-        kroki_url = self.config["ServerURL"] + "/" + kroki_type + "/svg/" + kroki_path
+        kroki_url = f"{self.config['ServerURL']}/{kroki_type}/svg/{kroki_path}"
 
         return kroki_url
 
     def _kroki_link(self, matchobj):
-        return "![Kroki](" + self._krokiurl(matchobj) + ")"
+        return f"![Kroki]({self._krokiurl(matchobj)})"
 
     def _download_image(self, matchobj, target, page, files):
         url = self._krokiurl(matchobj)
